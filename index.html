@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus Tiers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rubik:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Top strip: Home / Tiers -->
+  <div class="topstrip">
+    <button class="toplink active" data-view="home">Home</button>
+    <span class="topsep">|</span>
+    <button class="toplink" data-view="tiers">Tiers</button>
+    <span class="topsep">|</span>
+    <button id="adminLink" class="toplink admin-toplink">Admin</button>
+  </div>
+
+  <!-- Header bar with category tabs + logo -->
+  <header class="headerbar">
+    <div class="cat-row cat-row-left">
+      <button class="cat-btn active" data-cat="overall"><span class="cat-icon" data-icon="overall"></span><span>Overall</span></button>
+      <button class="cat-btn" data-cat="vanilla"><span class="cat-icon" data-icon="vanilla"></span><span>Vanilla</span></button>
+      <button class="cat-btn" data-cat="sword"><span class="cat-icon" data-icon="sword"></span><span>Sword</span></button>
+      <button class="cat-btn" data-cat="axe"><span class="cat-icon" data-icon="axe"></span><span>Axe</span></button>
+    </div>
+
+    <div class="logo-pill">
+      <h1>Nexus Tiers</h1>
+      <span class="logo-tag">Minecraft PvP Tier List</span>
+    </div>
+
+    <div class="cat-row cat-row-right">
+      <button class="cat-btn" data-cat="nethpot"><span class="cat-icon" data-icon="nethpot"></span><span>NethPot</span></button>
+      <button class="cat-btn" data-cat="diamondpot"><span class="cat-icon" data-icon="diamondpot"></span><span>DiamondPot</span></button>
+      <button class="cat-btn" data-cat="smp"><span class="cat-icon" data-icon="smp"></span><span>Smp</span></button>
+      <button class="cat-btn" data-cat="uhc"><span class="cat-icon" data-icon="uhc"></span><span>Uhc</span></button>
+      <button class="cat-btn" data-cat="mace"><span class="cat-icon" data-icon="mace"></span><span>Mace</span></button>
+    </div>
+  </header>
+
+  <!-- HOME VIEW -->
+  <main id="view-home" class="view active">
+    <h2 class="section-title">Top Players</h2>
+    <div class="podium" id="podium"></div>
+  </main>
+
+  <!-- TIERS VIEW -->
+  <main id="view-tiers" class="view">
+
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </span>
+        <input id="searchInput" type="text" placeholder="Search player...">
+      </div>
+      <select id="regionFilter">
+        <option value="all">All Regions</option>
+        <option value="NA">NA</option>
+        <option value="EU">EU</option>
+        <option value="AS">AS</option>
+        <option value="OTHER">OTHER</option>
+      </select>
+      <button id="addPlayerBtn" class="add-btn">+ Add Player</button>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-head">
+        <span class="col-rank">#</span>
+        <span class="col-player">Player</span>
+        <span class="col-region">Region</span>
+        <span class="col-tiers">Tiers</span>
+        <span class="col-points">Points</span>
+        <span class="col-actions"></span>
+      </div>
+      <div id="playerRows"></div>
+    </div>
+
+    <div id="tierBoard" class="tier-board"></div>
+
+  </main>
+
+</div>
+
+<!-- ADD / EDIT PLAYER MODAL -->
+<div id="modalOverlay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">Add Player</h3>
+      <button id="closeModal" class="modal-close">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Username</label>
+        <div class="username-row">
+          <img id="skinPreview" class="skin-preview" src="https://mc-heads.net/avatar/steve/40" alt="">
+          <input id="usernameInput" type="text" placeholder="Minecraft username">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Region</label>
+        <select id="regionInput">
+          <option value="NA">NA</option>
+          <option value="EU">EU</option>
+          <option value="AS">AS</option>
+          <option value="OTHER">OTHER</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>Title Badge</label>
+        <select id="titleSelect">
+          <option value="auto">Auto (based on rank)</option>
+          <option value="combat_master">Combat Master</option>
+          <option value="elite_fighter">Elite Fighter</option>
+          <option value="skilled_fighter">Skilled Fighter</option>
+          <option value="rising_player">Rising Player</option>
+          <option value="custom">Custom…</option>
+        </select>
+        <input id="customTitleInput" type="text" placeholder="Custom title text" style="display:none;">
+      </div>
+
+      <div class="tier-grid" id="tierGrid"></div>
+    </div>
+
+    <div class="modal-foot">
+      <button id="deletePlayerBtn" class="danger-btn" style="display:none;">Delete Player</button>
+      <button id="savePlayerBtn" class="save-btn">Save Player</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER PROFILE MODAL -->
+<div id="profileModalOverlay" class="modal-overlay">
+  <div class="modal profile-modal">
+    <button id="closeProfileModal" class="profile-close">&times;</button>
+    <div id="profileModalBody"></div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="loginModalOverlay" class="modal-overlay">
+  <div class="modal login-modal">
+    <div class="modal-head">
+      <h3>Admin Login</h3>
+      <button id="closeLoginModal" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>Username</label>
+        <input id="loginUsername" type="text" autocomplete="off" placeholder="Username">
+      </div>
+      <div class="form-row">
+        <label>Password</label>
+        <input id="loginPassword" type="password" autocomplete="off" placeholder="Password">
+      </div>
+      <div id="loginError" class="login-error" style="display:none;">Incorrect username or password.</div>
+    </div>
+    <div class="modal-foot">
+      <span></span>
+      <button id="loginSubmitBtn" class="save-btn">Log In</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXPORT / IMPORT (for saving your data between sessions) -->
+<div class="data-bar">
+  <button id="exportBtn" class="ghost-btn">⬇ Export Data</button>
+  <button id="importBtn" class="ghost-btn">⬆ Import Data</button>
+  <input type="file" id="importFile" accept=".json" style="display:none;">
+</div>
+
+<script src="players-data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
